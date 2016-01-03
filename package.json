@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "through": "~2.3.4",
+    "through2": "^2.0.0",
     "optimist": "~0.3.5"
   },
   "devDependencies": {
