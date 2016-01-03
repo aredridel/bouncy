@@ -1,6 +1,6 @@
 var http = require('http');
 var https = require('https');
-var through = require('through');
+var through = require('through2');
 var parseArgs = require('./lib/parse_args.js');
 var insert = require('./lib/insert');
 var nextTick = typeof setImmediate !== 'undefined'
@@ -24,7 +24,7 @@ module.exports = function (opts, cb) {
         : http.createServer()
     );
     server.on(connectionEvent, function (stream) {
-        var src = stream._bouncyStream = stealthBuffer();
+        var src = stream._bouncyStream = through()
         
         // hack to work around a node 0.10 bug:
         // https://github.com/joyent/node/commit/e11668b244ee62d9997d4871f368075b8abf8d45
@@ -91,33 +91,10 @@ module.exports = function (opts, cb) {
             ;
             s.pipe(dst).pipe(req.connection);
             
-            nextTick(function () { src._resume() });
             return dst;
         };
         
         if (cb.length === 2) cb(req, bounce)
         else cb(req, res, bounce)
-    }
-};
-
-function stealthBuffer () {
-    // the raw_ok test doesn't pass without this shim
-    // instead of just using through() and then immediately calling .pause()
-    
-    var tr = through(write, end);
-    var buffer = [];
-    tr._resume = function () {
-        buffer.forEach(tr.queue.bind(tr));
-        buffer = undefined;
-    };
-    return tr;
-    
-    function write (buf) {
-        if (buffer) buffer.push(buf)
-        else this.queue(buf)
-    }
-    function end () {
-        if (buffer) buffer.push(null)
-        else this.queue(null)
     }
 }
