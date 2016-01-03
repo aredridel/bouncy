@@ -24,7 +24,7 @@ test('destroy the socket during piping', function (t) {
             
             setTimeout(function () {
                 c.once('error', function (err) {
-                    t.ok(/socket is closed/.test(err.message));
+                    t.match(err.message, /socket is closed|This socket has been ended by the other party/);
                 });
                 c.write('a=3&b=4');
             }, 300);
