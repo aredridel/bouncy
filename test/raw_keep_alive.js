@@ -20,7 +20,7 @@ test('raw keep alive', function (t) {
     var s1 = http.createServer(function (req, res) {
         t.equal(req.url, u.shift());
         setTimeout(function () {
-            res.end(req.url.slice(1).toUpperCase());
+            res.end(req.url.slice(1).toUpperCase() + "\r\n");
         }, 75);
     });
     
