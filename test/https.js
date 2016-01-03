@@ -36,6 +36,7 @@ test('https', function (t) {
             host : 'localhost',
             port : s1.address().port,
             path : '/beep',
+            rejectUnauthorized : false,
             headers : { connection : 'close' }
         };
         
