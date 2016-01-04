@@ -2,7 +2,6 @@ var test = require('tap').test;
 var bouncy = require('../');
 var net = require('net');
 var http = require('http');
-var through = require('through');
 
 test('raw keep alive', function (t) {
     t.plan(5);
