@@ -1,7 +1,7 @@
 var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
-var through = require('through');
+var through = require('through2');
 
 test('GET with http', function (t) {
     t.plan(3);
@@ -9,8 +9,7 @@ test('GET with http', function (t) {
         t.equal(req.headers.host, 'localhost:' + s.address().port);
         
         var stream = through(
-            function () {},
-            function () {}
+            function (a, b, cb) { cb() }
         );
         bounce(stream);
         
