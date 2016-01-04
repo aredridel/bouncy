@@ -2,7 +2,7 @@ var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
 var net = require('net');
-var through = require('through');
+var concat = require('concat-stream');
 
 var postData = '';
 
@@ -38,14 +38,11 @@ test('POST large data', function (t) {
             postData
         ].join('\r\n'));
         
-        var data = '';
-        c.pipe(through(write, end));
-        function write (buf) { data += buf }
-        function end () {
+        c.pipe(concat(function (data) {
             //strip off response headers and filter out lengths that
             //show up every 10000 bytes or so. I'm not sure what that's
             //all about. Is it part of HTTP chunked encoding?
-            data = data.split('\r\n').map(function (chunk, i) {
+            data = String(data).split('\r\n').map(function (chunk, i) {
                 if (i > 5 && !(i % 2)) {
                     return chunk;
                 }
@@ -55,6 +52,6 @@ test('POST large data', function (t) {
 
             t.equal(data, postData);
             c.end();
-        }
+        }))
     });
 });
