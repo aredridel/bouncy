@@ -2,7 +2,7 @@ var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
 var net = require('net');
-var through = require('through');
+var through = require('through2');
 
 test('POST with keep-alive and content-length', function (t) {
     t.plan(2);
@@ -18,11 +18,15 @@ test('POST with keep-alive and content-length', function (t) {
     var s = http.createServer(function (req, res) {
         var size = 0;
         req.pipe(through(write, end));
-        function write (buf) { size += buf.length }
-        function end () {
+        function write (buf, _, cb) {
+            size += buf.length
+            cb()
+        }
+        function end (cb) {
             var s = String(size);
             res.setHeader('content-length', s.length);
             res.end(s)
+            cb()
         }
     });
     s.listen(0);
@@ -38,12 +42,13 @@ test('POST with keep-alive and content-length', function (t) {
         ].join('\r\n'));
         
         var data = '';
-        c.pipe(through(function (buf) {
+        c.pipe(through(function (buf, _, cb) {
             data += buf;
             if (/\r\n\r\n|\n\n/.test(data)) {
                 t.equal(data.split('\n').slice(-1)[0], '9');
                 c.end();
             }
+            cb();
         }));
     });
 });
