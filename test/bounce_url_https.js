@@ -21,7 +21,7 @@ test('https', function (t) {
     s0.listen(connect);
     
     var s1 = bouncy(function (req, bounce) {
-        bounce("https://localhost:"+s0.address().port+"/beep");
+        bounce("https://localhost:"+s0.address().port+"/beep", { rejectUnauthorized : false });
     });
     s1.listen(connect);
     
