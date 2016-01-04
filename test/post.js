@@ -1,7 +1,7 @@
 var test = require('tap').test;
 var bouncy = require('../');
 var http = require('http');
-var through = require('through');
+var through = require('through2');
 
 test('POST with http', function (t) {
     t.plan(4);
@@ -10,18 +10,19 @@ test('POST with http', function (t) {
         
         var alive = true;
         var data = '';
-        var stream = through(function (buf) {
+        var stream = through(function (buf, _, cb) {
             data += buf.toString();
             
             if (alive && data.match(/pow!/)) {
                 t.ok(true, 'got post data');
-                stream.queue(null);
+                stream.push(null);
                 alive = false;
             }
+            cb();
         });
         bounce(stream);
         
-        stream.queue([
+        stream.push([
             'HTTP/1.1 200 200 OK',
             'Content-Type: text/plain',
             'Connection: close',
