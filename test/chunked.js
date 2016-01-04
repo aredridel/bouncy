@@ -4,7 +4,7 @@ var http = require('http');
 var net = require('net');
 var split = require('split');
 var concat = require('concat-stream');
-var through = require('through');
+var through = require('through2');
 
 test('chunked transfers should be transparent', function (t) {
     t.plan(2);
@@ -16,7 +16,7 @@ test('chunked transfers should be transparent', function (t) {
     
     var s1 = net.createServer(function (c) {
         var sentHeader = false;
-        c.pipe(split()).pipe(through(function (buf) {
+        c.pipe(split()).pipe(through(function (buf, _, cb) {
             var line = String(buf);
             if (!sentHeader && line === '' || line === '\r') {
                 sentHeader = true;
@@ -29,6 +29,7 @@ test('chunked transfers should be transparent', function (t) {
                     ''
                 ].join('\r\n'));
             }
+            cb();
         }));
         
         var chunks = [
