@@ -25,12 +25,12 @@
     "optimist": "~0.3.5"
   },
   "devDependencies": {
-    "tap": "~0.4.0",
     "websocket-server": "~1.4.04",
     "wsclient": "~0.2.0",
     "chunky": "~0.0.0",
     "concat-stream": "~1.0.0",
-    "split": "~0.2.5"
+    "split": "~0.2.5",
+    "tap": "^4.0.0"
   },
   "license": "MIT",
   "author": {
